@@ -9,10 +9,10 @@ introduce:
 
 import pygame
 from pygame.sprite import Group
-
-import alien.game_functions as gf
-from alien.settings import Settings
-from alien.ship import Ship
+from alienInvade.settings import Settings
+from alienInvade.ship import Ship
+import alienInvade.game_functions as gf
+from alienInvade.game_stats import GameStats
 
 
 def run_game():
@@ -29,22 +29,34 @@ def run_game():
     #窗口的名称，左上角的名称
     pygame.display.set_caption("Alien Invasion")
     
+    #创建一个用于存储游戏统计信息的实例
+    stats = GameStats(ai_settings)
+    
+    #创建一艘飞船，一个子弹编组和一个外星人编组
     #创建一艘飞船
     ship = Ship(ai_settings,screen)
     #创建一个用于存储子弹的编组
     bullets = Group()
+    #创建一个外星人alien = Alien(ai_settings,screen)
+    #创建一根外星人编组
+    aliens = Group()
+    #创建外星人群
+    gf.create_fleet(ai_settings,screen,ship,aliens)
     
     #开始游戏的主循环
     while True:
         #调用game_function中监视键盘和鼠标的函数
         gf.check_events(ai_settings,screen,ship,bullets)
-        #检测事件后就跟新
-        ship.update()
-          
-        #删除已经消失的子弹
-        gf.update_bullets(bullets)
+        if stats.game_active:
+            #检测事件后就跟新
+            ship.update() 
+            #删除已经消失的子弹
+            gf.update_bullets(ai_settings,screen,ship,aliens,bullets)
+            #更新每个外星人的位置
+            gf.update_aliens(ai_settings,stats,screen,ship,aliens,bullets)
+        
         #调用game_function中更新屏幕的函数
-        gf.update_screen(ai_settings, screen, ship,bullets)
+        gf.update_screen(ai_settings, screen, ship,aliens,bullets)
         
 run_game()
                 
