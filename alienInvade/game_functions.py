@@ -37,7 +37,7 @@ def check_keyup_events(event,ship):
         ship.moving_left = False
 
 #事件响应       
-def check_events(ai_sittings,screen,ship,bullets):
+def check_events(ai_sittings,screen,stats,play_button,ship,bullets):
     """事件管理：监视键盘和鼠标"""
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -48,8 +48,16 @@ def check_events(ai_sittings,screen,ship,bullets):
             check_keydown_events(event, ai_sittings,screen,ship,bullets)
         elif event.type == pygame.KEYUP:#鼠标离开
             check_keyup_events(event, ship)
+        elif event.type == pygame.MOUSEBUTTONDOWN:
+            mouse_x,mouse_y = pygame.mouse.get_pos() #我们使用了pygame.mouse.get_pos()，它返回一个元组，其中包含玩家单击时鼠标的x和y坐标
+            check_play_button(stats,play_button,mouse_x,mouse_y)
 
-def update_screen(ai_settings,screen,ship,aliens,bullets):
+def check_play_button(stats,play_button,mouse_x,mouse_y):
+    """在玩家单击Play按钮时开始新游戏"""
+    if play_button.rect.collidepoint(mouse_x,mouse_y): #而这个函数使用collidepoint()检查鼠标单击位置是否在Play按钮的rect内
+        stats.game_active = True #让游戏就此开始
+
+def update_screen(ai_settings,screen,atats,ship,aliens,bullets,play_button):
     """更新屏幕上的图像 并切换到新屏幕"""
     #每次循环时候都会重绘屏幕
     #用背景色填充屏幕；这个方法只接受一个实参：一种颜色
@@ -62,7 +70,11 @@ def update_screen(ai_settings,screen,ship,aliens,bullets):
     ship.blitme()
     #使用alien中的方法绘制外星人aliens.blitme(screen)
     aliens.draw(screen)#aliens.draw(screen)在屏幕上绘制编组中的每个外星人
-               
+    
+    #如果游戏处于非活动状态，就绘制Play按钮
+    if not atats.game_active:
+        play_button.draw_button()
+                
     #让最近绘制的屏幕可见，不断更新屏幕，隐藏原来的屏幕
     pygame.display.flip()      
     

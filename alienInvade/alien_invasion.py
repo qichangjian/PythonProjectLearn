@@ -13,6 +13,7 @@ from alienInvade.settings import Settings
 from alienInvade.ship import Ship
 import alienInvade.game_functions as gf
 from alienInvade.game_stats import GameStats
+from alienInvade.button import Button
 
 
 def run_game():
@@ -28,6 +29,9 @@ def run_game():
     screen = pygame.display.set_mode((ai_settings.screen_width, ai_settings.screen_height))
     #窗口的名称，左上角的名称
     pygame.display.set_caption("Alien Invasion")
+    
+    #创建Play按钮
+    play_button = Button(ai_settings,screen,"Play")
     
     #创建一个用于存储游戏统计信息的实例
     stats = GameStats(ai_settings)
@@ -46,7 +50,7 @@ def run_game():
     #开始游戏的主循环
     while True:
         #调用game_function中监视键盘和鼠标的函数
-        gf.check_events(ai_settings,screen,ship,bullets)
+        gf.check_events(ai_settings,screen,stats,play_button,ship,bullets)
         if stats.game_active:
             #检测事件后就跟新
             ship.update() 
@@ -56,7 +60,7 @@ def run_game():
             gf.update_aliens(ai_settings,stats,screen,ship,aliens,bullets)
         
         #调用game_function中更新屏幕的函数
-        gf.update_screen(ai_settings, screen, ship,aliens,bullets)
+        gf.update_screen(ai_settings, screen,stats,ship,aliens,bullets,play_button)
         
 run_game()
                 
